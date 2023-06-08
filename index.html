@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payslip</title>
+  </head>
+  <body>
+    <div>
+      <label for="salary">Salary</label>
+      <input type="number" name="salary" id="salary" />
+    </div>
+
+    <div>
+      <label for="net">Net</label>
+      <input type="number" name="net" id="net" />
+    </div>
+
+    <div>
+      <label for="monthlySalary">Monthly Salary</label>
+      <input type="number" name="monthlySalary" id="monthlySalary" />
+    </div>
+
+    <div>
+      <label for="monthlyNet">Monthly Net</label>
+      <input type="number" name="monthlyNet" id="monthlyNet" />
+    </div>
+
+    <dl>
+      <dt>Pension</dt>
+      <dd>
+        3% of pensionable earnings per year = £<span id="monthlyPension"></span>
+        per month
+      </dd>
+      <dt>National Insurance</dt>
+      <dd>
+        12% on anything you earn between £242 and £967 a week (£1,048 and £4,189
+        a month), plus 2% on anything you earn over £967 a week (£4,189 a month)
+        = £<span id="monthlyNationalInsurance"></span> per month
+      </dd>
+      <dt>Income Tax</dt>
+      <dd>
+        20% on anything you earn between £12,571 and £50,270 per year = £<span
+          id="monthlyTax"
+        ></span>
+        per month
+      </dd>
+      <dt>Student Loan</dt>
+      <dd>
+        9% of your income over $27,29 per year (5£2,274 per month) = £<span
+          id="monthlyStudentLoan"
+        ></span>
+        per month
+      </dd>
+      <dt>Postgraduate Loan</dt>
+      <dd>
+        6% of your income over £21,000 per year (£1,750 per month) = £<span
+          id="monthlyPostgraduateLoan"
+        ></span>
+        per month
+      </dd>
+    </dl>
+
+    <dl>
+      <dt>Salary (s)</dt>
+      <dd>s = 2(n - 7739.87)</dd>
+      <dt>Net (n)</dt>
+      <dd>n = 0.5s + 7739.87</dd>
+      <dt>Salary delta (Δs)</dt>
+      <dd>Δs = 2Δn</dd>
+      <dt>Net delta (Δn)</dt>
+      <dd>Δn = 0.5Δs</dd>
+    </dl>
+
+    <script>
+      const salaryElement = document.querySelector("#salary");
+      const netElement = document.querySelector("#net");
+      const monthlySalaryElement = document.querySelector("#monthlySalary");
+      const monthlyNetElement = document.querySelector("#monthlyNet");
+      const monthlyPensionElement = document.querySelector("#monthlyPension");
+      const monthlyNationalInsuranceElement = document.querySelector(
+        "#monthlyNationalInsurance"
+      );
+      const monthlyTaxElement = document.querySelector("#monthlyTax");
+      const monthlyStudentLoanElement = document.querySelector(
+        "#monthlyStudentLoan"
+      );
+      const monthlyPostgraduateLoanElement = document.querySelector(
+        "#monthlyPostgraduateLoan"
+      );
+
+      const round2dp = (value) => Math.round(value * 100) / 100;
+
+      // n = s - 0.03s - 0.12(s - 1048*12) - 0.2(s - 12571) - 0.09(s - 27295) - 0.06(s - 21000) = 0.5s + 7739.87
+      // Δn = 0.5s2 + 7739.87 - 0.5s1 + 7739.87 = 0.5Δs
+      const calculateNet = (salary) => 0.5 * salary + 7739.87;
+
+      // s = (n - 7739.87) / 0.5 = 2(n - 7739.87)
+      // Δs = 2Δn
+      const calculateSalary = (net) => 2 * (net - 7739.87);
+
+      const onSalaryChanged = () => {
+        const salary = parseFloat(salaryElement.value ?? "0");
+        const net = calculateNet(salary);
+        const monthlySalary = salary / 12;
+        const monthlyNet = net / 12;
+
+        netElement.value = round2dp(net);
+        monthlySalaryElement.value = round2dp(monthlySalary);
+        monthlyNetElement.value = round2dp(monthlyNet);
+      };
+
+      const onNetChanged = () => {
+        const net = parseFloat(netElement.value ?? "0");
+        const salary = calculateSalary(net);
+        const monthlySalary = salary / 12;
+        const monthlyNet = net / 12;
+
+        salaryElement.value = round2dp(salary);
+        monthlySalaryElement.value = round2dp(monthlySalary);
+        monthlyNetElement.value = round2dp(monthlyNet);
+      };
+
+      const onMonthlySalaryChanged = () => {
+        const monthlySalary = parseFloat(monthlySalaryElement.value ?? "0");
+        const salary = monthlySalary * 12;
+        const net = calculateNet(salary);
+        const monthlyNet = net / 12;
+
+        salaryElement.value = round2dp(salary);
+        netElement.value = round2dp(net);
+        monthlyNetElement.value = round2dp(monthlyNet);
+      };
+
+      const onMonthlyNetChanged = () => {
+        const monthlyNet = parseFloat(monthlyNetElement.value ?? "0");
+        const net = monthlyNet * 12;
+        const salary = calculateSalary(net);
+        const monthlySalary = salary / 12;
+
+        netElement.value = round2dp(net);
+        salaryElement.value = round2dp(salary);
+        monthlySalaryElement.value = round2dp(monthlyNet);
+      };
+
+      const setMonthlyDeductions = () => {
+        const salary = parseFloat(salaryElement.value ?? "");
+
+        const pension = salary * 0.03;
+        const nationalInsurance = (salary - 1048 * 12) * 0.12;
+        const tax = (salary - 12571) * 0.2;
+        const studentLoan = (salary - 27295) * 0.09;
+        const postgraduateLoan = (salary - 21000) * 0.06;
+
+        monthlyPensionElement.innerText = round2dp(pension / 12);
+        monthlyNationalInsuranceElement.innerText = round2dp(
+          nationalInsurance / 12
+        );
+        monthlyTaxElement.innerText = round2dp(tax / 12);
+        monthlyStudentLoanElement.innerText = round2dp(studentLoan / 12);
+        monthlyPostgraduateLoanElement.innerText = round2dp(
+          postgraduateLoan / 12
+        );
+      };
+
+      salaryElement.addEventListener("input", () => {
+        onSalaryChanged();
+        setMonthlyDeductions();
+      });
+
+      netElement.addEventListener("input", () => {
+        onNetChanged();
+        setMonthlyDeductions();
+      });
+
+      monthlySalaryElement.addEventListener("input", () => {
+        onMonthlySalaryChanged();
+        setMonthlyDeductions();
+      });
+
+      monthlyNetElement.addEventListener("input", () => {
+        onMonthlyNetChanged();
+        setMonthlyDeductions();
+      });
+
+      salaryElement.value = "40000";
+      onSalaryChanged();
+      setMonthlyDeductions();
+    </script>
+  </body>
+</html>
