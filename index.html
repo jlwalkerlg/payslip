@@ -108,7 +108,7 @@
         "#postgraduateLoanMonthly"
       );
 
-      const round2dp = (value) => Math.round(value * 100) / 100;
+      const format2dp = (value) => value.toFixed(2).replace(".00", "");
 
       // n = g - 0.03g - 0.12(g - 1048*12) - 0.2(g - 12571) - 0.09(g - 27295) - 0.06(g - 21000) = 0.5g + 7739.87
       // Δn = 0.5g2 + 7739.87 - 0.5g1 + 7739.87 = 0.5Δg
@@ -125,21 +125,9 @@
         const netYearly = calculateNet(grossYearly);
         const netMonthly = netYearly / 12;
 
-        netYearlyElement.value = round2dp(netYearly);
-        grossMonthlyElement.value = round2dp(grossMonthly);
-        netMonthlyElement.value = round2dp(netMonthly);
-      };
-
-      const onNetYearlyChanged = () => {
-        const netYearly = parseFloat(netYearlyElement.value) || 0;
-
-        const netMonthly = netYearly / 12;
-        const grossYearly = calculateGross(netYearly);
-        const grossMonthly = grossYearly / 12;
-
-        grossYearlyElement.value = round2dp(grossYearly);
-        grossMonthlyElement.value = round2dp(grossMonthly);
-        netMonthlyElement.value = round2dp(netMonthly);
+        netYearlyElement.value = format2dp(netYearly);
+        grossMonthlyElement.value = format2dp(grossMonthly);
+        netMonthlyElement.value = format2dp(netMonthly);
       };
 
       const onGrossMonthlyChanged = () => {
@@ -149,9 +137,21 @@
         const netYearly = calculateNet(grossYearly);
         const netMonthly = netYearly / 12;
 
-        grossYearlyElement.value = round2dp(grossYearly);
-        netYearlyElement.value = round2dp(netYearly);
-        netMonthlyElement.value = round2dp(netMonthly);
+        grossYearlyElement.value = format2dp(grossYearly);
+        netYearlyElement.value = format2dp(netYearly);
+        netMonthlyElement.value = format2dp(netMonthly);
+      };
+
+      const onNetYearlyChanged = () => {
+        const netYearly = parseFloat(netYearlyElement.value) || 0;
+
+        const netMonthly = netYearly / 12;
+        const grossYearly = calculateGross(netYearly);
+        const grossMonthly = grossYearly / 12;
+
+        grossYearlyElement.value = format2dp(grossYearly);
+        grossMonthlyElement.value = format2dp(grossMonthly);
+        netMonthlyElement.value = format2dp(netMonthly);
       };
 
       const onNetMonthlyChanged = () => {
@@ -161,9 +161,9 @@
         const grossYearly = calculateGross(netYearly);
         const grossMonthly = grossYearly / 12;
 
-        netYearlyElement.value = round2dp(netYearly);
-        grossYearlyElement.value = round2dp(grossYearly);
-        grossMonthlyElement.value = round2dp(netMonthly);
+        netYearlyElement.value = format2dp(netYearly);
+        grossYearlyElement.value = format2dp(grossYearly);
+        grossMonthlyElement.value = format2dp(netMonthly);
       };
 
       const setMonthlyDeductions = () => {
